@@ -169,7 +169,22 @@ AWS credentials must be available in your environment (via `~/.aws/credentials`,
 
 ## Design notes
 
+- **Next.js** for rapid development of front end components with React and integrated backend. Typescript for type safety.
+- **Amazon Bedrock** for serverless model endpoint to allow for quick demo deployment and low/unpredictable usage associated with demo
+- **Claude Sonnet 4.5** as a model capable of many different tasks and with multi modal capabilities to be able to inspect the uploaded image and present quality, well definied observations
+- **DynamoDB** to support rapidly changing schema and additional information that we may capture during demo/PoC development
 - **Single API call**: The upload, AI assessment, and database write all happen in a single `POST /api/upload` request. This simplifies the client and avoids orphaned uploads, at the cost of a longer request duration (5-15 seconds depending on Bedrock latency).
 - **Non-critical AI assessment**: The Bedrock call is wrapped in its own try/catch. If it fails, the upload still succeeds and the error is recorded in DynamoDB. The summary page renders an appropriate error message rather than losing the upload entirely.
 - **Structured output via Zod**: The AI response is validated against a Zod schema using the Vercel AI SDK's `generateObject`, ensuring type-safe, predictable output from the model.
 - **Presigned URLs for images**: The summary page is a React Server Component that generates a 1-hour presigned S3 URL for the image. The page is marked `force-dynamic` to prevent Next.js from caching expired URLs.
+
+## AI logic
+
+When a user uploads an image, this is passed into the model as an image buffer with a system prompt input giving the model its persona, context and instructions. A schema is also provied to assist with well defined, structured output so that it can be safely rendered in the client UI.
+
+## Future improvements
+
+- User feedback implementation to help capture evaluation/validation data to understand how well the model is performing
+- Explore use of regression model, using existing data for training. LLM approach could assist with extracting features, which are then used as input data to the cost prediction model
+- Integration with IdP for authentication to the app
+- Inference results are captured in DynamoDB, provide UI components to allow browsing. Extract this data to integrate with future ground truth data (actual fix costs)
