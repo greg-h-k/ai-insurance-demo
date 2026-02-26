@@ -1,0 +1,5 @@
+environment        = "dev"
+aws_region         = "us-east-1"
+vpc_name           = "ai-insurance-vpc"
+vpc_cidr           = "10.0.0.0/16"
+aws_bedrock_model_id ="global.anthropic.claude-sonnet-4-5-20250929-v1:0"
